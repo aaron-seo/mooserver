@@ -3,13 +3,10 @@ A proxy TCP server herd architecture prototype for Google Places API written in 
 
 Based on Dr. Paul Eggert's CS131 Project Spec (original project calls for Python).
 
-### 1. Build
-`go build`
+### Usage
+`go run main.go --id [idname]`
 
-### 2. Start a mooserver instance
-`./proxy-herd --id [idname]`
-
-(e.g. `./proxy-herd --id Clark`)
+(e.g. `go run main.go --id Clark`)
 
 ## Credits
 Fundamental server architecture takes inspiration from the standard library's net/http.
