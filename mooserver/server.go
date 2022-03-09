@@ -3,6 +3,7 @@ package mooserver
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"strings"
@@ -101,6 +102,7 @@ type Request struct {
 type command struct {
 	Method string
 	Fields []string // fields[0] == method
+	Raw    string
 }
 
 // Helper functions for parsing commands
@@ -109,6 +111,7 @@ func parseCommand(rawCommand string) command {
 	cmd := command{
 		Method: fields[0],
 		Fields: fields,
+		Raw:    rawCommand,
 	}
 	return cmd
 }
@@ -136,7 +139,12 @@ func (mux *ServeMux) match(method string) (h Handler, pattern string) {
 		return v.h, v.pattern
 	}
 
-	return nil, ""
+	return HandlerFunc(noMatch), ""
+}
+
+// TODO no match
+func noMatch(w ResponseWriter, r *Request) {
+	fmt.Fprintf(w, "? %s", r.Command.Raw)
 }
 
 func (mux *ServeMux) Serve(w ResponseWriter, r *Request) {

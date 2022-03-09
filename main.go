@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"net/http"
 	"regexp"
 	"strconv"
 	"sync"
@@ -12,6 +15,8 @@ import (
 
 	"github.com/aaron-seo/proxy-herd/mooserver"
 )
+
+const KEY = "AIzaSyBDD0GRystBZTCKkgVZhgsopsF38JyH5CE"
 
 // a string to string map of server names and their ports on SEASnet
 var ports = map[string]string{
@@ -56,21 +61,30 @@ func main() {
 
 	mux := mooserver.NewServeMux()
 
+	// for client-server
 	mux.HandleFunc("IAMAT", HandleIAMAT)
 	mux.HandleFunc("WHATSAT", HandleWHATSAT)
+
+	// for server-server
+	mux.HandleFunc("AT", HandleAT)
 
 	log.Printf("server %s listening on port %s", serverID, ports[serverID])
 	log.Fatal(mooserver.ListenAndServe(":"+ports[serverID], mux))
 }
 
 func HandleIAMAT(w mooserver.ResponseWriter, r *mooserver.Request) {
-	log.Println("HandleIAMAT")
+	log.Printf("%s HandleIAMAT: ", serverID)
+
+	if len(r.Command.Fields) != 4 {
+		fmt.Fprintf(w, "? %s", r.Command.Raw)
+		return
+	}
+
 	iamat := parseIAMAT(r.Command.Fields)
+	log.Printf("%s HandleIAMAT: %+v", serverID, iamat)
 
 	timeNow := float64(time.Now().UnixNano()) / float64(time.Second)
 	timeDelta := timeNow - iamat.timestamp
-
-	// TODO validate/sanitize data
 
 	loc := location{
 		serverID,
@@ -82,69 +96,144 @@ func HandleIAMAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	}
 	storeAndPropagate(loc)
 
-	fmt.Fprintf(w, "AT %s %f %s %f %f %f",
+	log.Printf("%s HandleIAMAT: AT %s %f %s %f %f %f", serverID,
 		serverID,
 		timeDelta,
 		iamat.client,
 		iamat.latitude,
 		iamat.longitude,
 		iamat.timestamp)
-}
 
-type location struct {
-	serverID  string
-	timeDelta float64
-	client    string
-	latitude  float64
-	longitude float64
-	timestamp float64
-}
-
-type locationsStore struct {
-	mu  sync.RWMutex
-	lns map[string]location
-}
-
-var locations locationsStore
-
-func storeAndPropagate(loc location) {
-	store(loc)
-	propagate(loc)
-}
-
-func store(loc location) {
-	locations.mu.Lock()
-	defer locations.mu.Unlock()
-
-	if locations.lns == nil {
-		locations.lns = make(map[string]location)
-	}
-	locations.lns[loc.client] = loc
-}
-
-func propagate(loc location) {
-	for _, neighbor := range neighbors {
-		log.Println("neighbor " + neighbor)
-		conn, err := net.Dial("tcp", "localhost:"+ports[neighbor])
-		if err != nil {
-			log.Println("error dialing tcp to neighbor")
-			return
-		}
-
-		if loc.latitude >= 0 {
-			log.Printf("IAMAT %s +%f%f %f", loc.client, loc.latitude, loc.longitude, loc.timestamp)
-			fmt.Fprintf(conn, "IAMAT %s +%f%f %f", loc.client, loc.latitude, loc.longitude, loc.timestamp)
-		} else {
-			fmt.Fprintf(conn, "IAMAT %s -%f%f %f", loc.client, loc.latitude, loc.longitude, loc.timestamp)
-		}
+	if iamat.latitude >= 0 {
+		fmt.Fprintf(w, "AT %s %f %s +%f%f %f",
+			serverID,
+			timeDelta,
+			iamat.client,
+			iamat.latitude,
+			iamat.longitude,
+			iamat.timestamp)
+	} else {
+		fmt.Fprintf(w, "AT %s %f %s %f%f %f",
+			serverID,
+			timeDelta,
+			iamat.client,
+			iamat.latitude,
+			iamat.longitude,
+			iamat.timestamp)
 	}
 }
 
 func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
+	log.Printf("%s WHATSAT", serverID)
+
+	if len(r.Command.Fields) != 4 {
+		fmt.Fprintf(w, "? %s", r.Command.Raw)
+		return
+	}
+
 	locations.mu.Lock()
 	defer locations.mu.Unlock()
 
-	fmt.Fprintf(w, "%+v", locations.lns[r.Command.Fields[1]])
+	whatsat := parseWHATSAT(r.Command.Fields)
+	log.Printf("%s WHATSAT: %+v", serverID, whatsat)
+
+	loc := locations.lns[whatsat.client]
+
+	query := fmt.Sprintf("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%f,%f&radius=%f&key=%s",
+		loc.latitude,
+		loc.longitude,
+		whatsat.radius*1000,
+		KEY)
+
+	resp, err := http.Get(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var bodyJSON map[string]interface{}
+	err = json.Unmarshal(body, &bodyJSON)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmpResult := make([]interface{}, 5)
+	for k, v := range bodyJSON {
+
+		switch k {
+		case "results":
+			switch vv := v.(type) {
+			case []interface{}:
+				for i, u := range vv {
+					if i >= 5 {
+						break
+					}
+					tmpResult[i] = u
+				}
+			}
+		}
+	}
+	bodyJSON["results"] = tmpResult
+
+	parsedJSON, _ := json.MarshalIndent(bodyJSON, "", "\t")
+
+	// get bounds
+
+	log.Printf("%s WHATSAT: AT %s %f %s %f %f %f\n%s", serverID,
+		loc.serverID,
+		loc.timeDelta,
+		loc.client,
+		loc.latitude,
+		loc.longitude,
+		loc.timestamp,
+		string(parsedJSON))
+
+	if loc.latitude >= 0 {
+		fmt.Fprintf(w, "AT %s %f %s +%f%f %f\n%s",
+			loc.serverID,
+			loc.timeDelta,
+			loc.client,
+			loc.latitude,
+			loc.longitude,
+			loc.timestamp,
+			string(parsedJSON))
+	} else {
+		fmt.Fprintf(w, "AT %s %f %s %f%f %f\n%s",
+			loc.serverID,
+			loc.timeDelta,
+			loc.client,
+			loc.latitude,
+			loc.longitude,
+			loc.timestamp,
+			string(parsedJSON))
+	}
+}
+
+func HandleAT(w mooserver.ResponseWriter, r *mooserver.Request) {
+	log.Printf("%s AT", serverID)
+
+	if len(r.Command.Fields) != 6 {
+		fmt.Fprintf(w, "? %s", r.Command.Raw)
+		return
+	}
+
+	at := parseAT(r.Command.Fields)
+	log.Printf("%s AT: %+v", serverID, at)
+
+	loc := location{
+		at.serverID,
+		at.timeDelta,
+		at.client,
+		at.latitude,
+		at.longitude,
+		at.timestamp,
+	}
+	storeAndPropagate(loc)
 }
 
 func parseIAMAT(fields []string) IAMAT {
@@ -173,16 +262,20 @@ func parseWHATSAT(fields []string) WHATSAT {
 	return parsed
 }
 
-func parseCoordinate(coord string) (float64, float64) {
-	ISOCoord := regexp.MustCompile(`((\+|-)\d+\.?\d*){2}`)
-	result := ISOCoord.FindString(coord)
-	INDCoord := regexp.MustCompile(`(\+|-)\d+\.?\d*`)
+func parseAT(fields []string) AT {
+	latitude, longitude := parseCoordinate(fields[4])
+	timeDelta, _ := strconv.ParseFloat(fields[2], 64)
+	timestamp, _ := strconv.ParseFloat(fields[5], 64)
 
-	pair := INDCoord.FindAllString(result, 2)
-	latitude, _ := strconv.ParseFloat(pair[0], 64)
-	longitude, _ := strconv.ParseFloat(pair[1], 64)
-
-	return latitude, longitude
+	parsed := AT{
+		fields[1],
+		timeDelta,
+		fields[3],
+		latitude,
+		longitude,
+		timestamp,
+	}
+	return parsed
 }
 
 type IAMAT struct {
@@ -196,4 +289,92 @@ type WHATSAT struct {
 	client string
 	radius float64
 	bound  int
+}
+
+type AT struct {
+	serverID  string
+	timeDelta float64
+	client    string
+	latitude  float64
+	longitude float64
+	timestamp float64
+}
+
+func parseCoordinate(coord string) (float64, float64) {
+	ISOCoord := regexp.MustCompile(`((\+|-)\d+\.?\d*){2}`)
+	result := ISOCoord.FindString(coord)
+	INDCoord := regexp.MustCompile(`(\+|-)\d+\.?\d*`)
+
+	pair := INDCoord.FindAllString(result, 2)
+	latitude, _ := strconv.ParseFloat(pair[0], 64)
+	longitude, _ := strconv.ParseFloat(pair[1], 64)
+
+	return latitude, longitude
+}
+
+type location struct {
+	serverID  string
+	timeDelta float64
+	client    string
+	latitude  float64
+	longitude float64
+	timestamp float64
+}
+
+type locationsStore struct {
+	mu  sync.RWMutex
+	lns map[string]location
+}
+
+var locations locationsStore
+
+func storeAndPropagate(loc location) {
+	// check for circular cycling
+	if ok := check(loc); ok {
+		store(loc)
+		propagate(loc)
+	} else {
+		//log.Println("circular")
+	}
+
+}
+
+func check(loc location) bool {
+	locations.mu.Lock()
+	defer locations.mu.Unlock()
+	if _, ok := locations.lns[loc.client]; ok {
+		if locations.lns[loc.client].timestamp == loc.timestamp {
+			return false
+		}
+	}
+	return true
+}
+
+func store(loc location) {
+	locations.mu.Lock()
+	defer locations.mu.Unlock()
+
+	if locations.lns == nil {
+		locations.lns = make(map[string]location)
+	}
+	locations.lns[loc.client] = loc
+}
+
+func propagate(loc location) {
+	for _, neighbor := range neighbors {
+		//log.Println("neighbor " + neighbor)
+		conn, err := net.Dial("tcp", "localhost:"+ports[neighbor])
+		if err != nil {
+			log.Printf("%s Error dialing tcp to %s", serverID, neighbor)
+			return
+		}
+		defer conn.Close()
+
+		if loc.latitude >= 0 {
+			//log.Printf("IAMAT %s +%f%f %f", loc.client, loc.latitude, loc.longitude, loc.timestamp)
+			fmt.Fprintf(conn, "AT %s %f %s +%f%f %f", loc.serverID, loc.timeDelta, loc.client, loc.latitude, loc.longitude, loc.timestamp)
+		} else {
+			fmt.Fprintf(conn, "AT %s %f %s %f%f %f", loc.serverID, loc.timeDelta, loc.client, loc.latitude, loc.longitude, loc.timestamp)
+		}
+	}
 }
