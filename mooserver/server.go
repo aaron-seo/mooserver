@@ -81,6 +81,7 @@ func (c *conn) serve() {
 	c.server.Handler.Serve(c.rwc, req)
 }
 
+// A Handler works with a request to a server
 type Handler interface {
 	Serve(ResponseWriter, *Request)
 }
@@ -142,16 +143,18 @@ func (mux *ServeMux) match(method string) (h Handler, pattern string) {
 	return HandlerFunc(noMatch), ""
 }
 
-// TODO no match
+// when no match for a requested command in the mux
 func noMatch(w ResponseWriter, r *Request) {
 	fmt.Fprintf(w, "? %s", r.Command.Raw)
 }
 
+// matches a command to mux (if successful) and serves the request
 func (mux *ServeMux) Serve(w ResponseWriter, r *Request) {
 	h, _ := mux.match(r.Command.Method)
 	h.Serve(w, r)
 }
 
+// Registers a command into mux
 func (mux *ServeMux) Handle(pattern string, handler Handler) {
 	mux.mu.Lock()
 	defer mux.mu.Unlock()
@@ -172,6 +175,7 @@ func (mux *ServeMux) Handle(pattern string, handler Handler) {
 	mux.m[pattern] = entry
 }
 
+// wrapper for HandlerFunc so we can have ordinary Go functions as Handlers
 func (mux *ServeMux) HandleFunc(pattern string, handler func(ResponseWriter, *Request)) {
 	if handler == nil {
 		panic("nil handler")

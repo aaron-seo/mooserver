@@ -16,6 +16,7 @@ import (
 	"github.com/aaron-seo/proxy-herd/mooserver"
 )
 
+// Google Places API... should probably hide this somewhere
 const KEY = "AIzaSyBDD0GRystBZTCKkgVZhgsopsF38JyH5CE"
 
 // a string to string map of server names and their ports on SEASnet
@@ -27,8 +28,10 @@ var ports = map[string]string{
 	"Clark":   "10375",
 }
 
+// slice of servers that this instance will talk to (bidirectionally)
 var neighbors []string
 
+// this specific server's ID, to be parsed in command line
 var serverID string
 
 func init() {
@@ -72,9 +75,11 @@ func main() {
 	log.Fatal(mooserver.ListenAndServe(":"+ports[serverID], mux))
 }
 
+// Handles IAMAT commands
 func HandleIAMAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	log.Printf("%s HandleIAMAT: ", serverID)
 
+	// validate requested command
 	if len(r.Command.Fields) != 4 {
 		fmt.Fprintf(w, "? %s", r.Command.Raw)
 		return
@@ -94,6 +99,7 @@ func HandleIAMAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 		iamat.longitude,
 		iamat.timestamp,
 	}
+
 	storeAndPropagate(loc)
 
 	log.Printf("%s HandleIAMAT: AT %s %f %s %f %f %f", serverID,
@@ -123,9 +129,11 @@ func HandleIAMAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	}
 }
 
+// handles WHATSAT command
 func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	log.Printf("%s WHATSAT", serverID)
 
+	// validate requested command
 	if len(r.Command.Fields) != 4 {
 		fmt.Fprintf(w, "? %s", r.Command.Raw)
 		return
@@ -162,7 +170,8 @@ func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 		log.Fatal(err)
 	}
 
-	tmpResult := make([]interface{}, 5)
+	// get bounded results
+	tmpResult := make([]interface{}, whatsat.bound)
 	for k, v := range bodyJSON {
 
 		switch k {
@@ -170,7 +179,7 @@ func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 			switch vv := v.(type) {
 			case []interface{}:
 				for i, u := range vv {
-					if i >= 5 {
+					if i >= whatsat.bound {
 						break
 					}
 					tmpResult[i] = u
@@ -179,10 +188,7 @@ func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 		}
 	}
 	bodyJSON["results"] = tmpResult
-
 	parsedJSON, _ := json.MarshalIndent(bodyJSON, "", "\t")
-
-	// get bounds
 
 	log.Printf("%s WHATSAT: AT %s %f %s %f %f %f\n%s", serverID,
 		loc.serverID,
@@ -214,9 +220,11 @@ func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	}
 }
 
+// handles AT command
 func HandleAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	log.Printf("%s AT", serverID)
 
+	// validate requested command
 	if len(r.Command.Fields) != 6 {
 		fmt.Fprintf(w, "? %s", r.Command.Raw)
 		return
@@ -236,6 +244,7 @@ func HandleAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 	storeAndPropagate(loc)
 }
 
+// helper functions to parse commands into respective data structures
 func parseIAMAT(fields []string) IAMAT {
 	latitude, longitude := parseCoordinate(fields[2])
 
@@ -300,6 +309,7 @@ type AT struct {
 	timestamp float64
 }
 
+// helper function for ISO coordinates
 func parseCoordinate(coord string) (float64, float64) {
 	ISOCoord := regexp.MustCompile(`((\+|-)\d+\.?\d*){2}`)
 	result := ISOCoord.FindString(coord)
@@ -312,6 +322,7 @@ func parseCoordinate(coord string) (float64, float64) {
 	return latitude, longitude
 }
 
+// for storing locations in server
 type location struct {
 	serverID  string
 	timeDelta float64
@@ -329,7 +340,6 @@ type locationsStore struct {
 var locations locationsStore
 
 func storeAndPropagate(loc location) {
-	// check for circular cycling
 	if ok := check(loc); ok {
 		store(loc)
 		propagate(loc)
@@ -339,6 +349,7 @@ func storeAndPropagate(loc location) {
 
 }
 
+// checks circular cycling
 func check(loc location) bool {
 	locations.mu.Lock()
 	defer locations.mu.Unlock()
