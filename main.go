@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"sync"
@@ -40,6 +41,16 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	// logging
+	err := os.Mkdir("logs", 0755)
+	f, err := os.OpenFile("logs/"+serverID+".log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	log.SetOutput(f)
 
 	// set neighbors according to spec
 	switch serverID {

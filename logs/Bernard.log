@@ -1,0 +1,59 @@
+2022/03/08 20:40:14 server Bernard listening on port 10372
+2022/03/08 20:40:57 Bernard AT
+2022/03/08 20:40:57 Bernard AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/08 20:40:57 Bernard AT
+2022/03/08 20:40:57 Bernard AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/08 20:40:57 Bernard AT
+2022/03/08 20:40:57 Bernard AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/08 20:40:57 Bernard AT
+2022/03/08 20:40:57 Bernard AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/08 20:41:26 Bernard WHATSAT
+2022/03/08 20:41:26 Bernard WHATSAT: {client:kiwi.cs.ucla.edu radius:10 bound:1}
+2022/03/08 20:41:26 Bernard WHATSAT: AT Juzang 25336030.006949 kiwi.cs.ucla.edu 34.068930 -118.445127 1621464827.959498
+{
+	"html_attributions": [],
+	"next_page_token": "Aap_uECczefdoluefPu2wsBp6HFLydP-8vTa2i0_fyPi52DKwKLz888a6BdPE0hGSmFwrsGOcIKDhuKKrMF6mjnx0aPbj9s6hrjtv5N7CTPTqVID_6TTvtBOCAcuSRzwZugnFHiFlELl4cRAw7spEfdh7_n3NEoxHBq9c47B817ZhWMyu4faKsD4nzO2FpjEkQYlkuqEU5tf3-5zvISDIovX9oA6MSxvR_LGDG2vcAOXfmk9F6oEfSL8KoPV7CoAiOETyxhhFWqyiibBcSECzgoW-RQmhFlueMnEJBpyBMFEZ8KTbgFssfLYWwGnDAOjYTASfgBDBX2UrNP9C5sk6oezgBWb09RHn8YTW2nKxgRI-2wIees9xUWBM7PEhnRRh7uhLmlwymg7ZcGdnKpRtDMFWxHCHD6ElF7EPno7mc0q1fcM",
+	"results": [
+		{
+			"geometry": {
+				"location": {
+					"lat": 34.0522342,
+					"lng": -118.2436849
+				},
+				"viewport": {
+					"northeast": {
+						"lat": 34.33730608759191,
+						"lng": -118.155289077463
+					},
+					"southwest": {
+						"lat": 33.70365193147634,
+						"lng": -118.6681759484859
+					}
+				}
+			},
+			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+			"icon_background_color": "#7B9EB0",
+			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+			"name": "Los Angeles",
+			"photos": [
+				{
+					"height": 746,
+					"html_attributions": [
+						"\u003ca href=\"https://maps.google.com/maps/contrib/108862076113400282635\"\u003eAROUND THE WORLD\u003c/a\u003e"
+					],
+					"photo_reference": "Aap_uEDxk6Iq_so_keKvG3crBs42NJPbjXBOH0EdkWi7jmcp-J_bjWtkV-U1qIzkZhyXLSzT62PhcrmQY9-zmZCq1qRQuErt3huRHWP-epvJmvYJNcgKeAVq630mdZKYJDZjoYiSB7VNoS6gEKD3YNWM8_TIeZiabK4zQY_fWR7bqgMPiING",
+					"width": 1079
+				}
+			],
+			"place_id": "ChIJE9on3F3HwoAR9AhGJW_fL-I",
+			"reference": "ChIJE9on3F3HwoAR9AhGJW_fL-I",
+			"scope": "GOOGLE",
+			"types": [
+				"locality",
+				"political"
+			],
+			"vicinity": "Los Angeles"
+		}
+	],
+	"status": "OK"
+}

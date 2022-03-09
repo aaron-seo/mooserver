@@ -1,0 +1,8 @@
+2022/03/08 20:39:35 server Juzang listening on port 10371
+2022/03/08 20:40:57 Juzang HandleIAMAT: 
+2022/03/08 20:40:57 Juzang HandleIAMAT: {client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.6214648279594984e+09}
+2022/03/08 20:40:57 Juzang HandleIAMAT: AT Juzang 25336030.006949 kiwi.cs.ucla.edu 34.068930 -118.445127 1621464827.959498
+2022/03/08 20:40:57 Juzang AT
+2022/03/08 20:40:57 Juzang AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/08 20:40:57 Juzang AT
+2022/03/08 20:40:57 Juzang AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
