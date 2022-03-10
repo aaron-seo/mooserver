@@ -1,57 +1,35 @@
-2022/03/08 20:40:41 server Clark listening on port 10375
-2022/03/08 20:40:57 Clark AT
-2022/03/08 20:40:57 Clark AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
-2022/03/08 20:40:57 Clark AT
-2022/03/08 20:40:57 Clark AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
-2022/03/08 20:40:57 Clark AT
-2022/03/08 20:40:57 Clark AT: {serverID:Juzang timeDelta:2.5336030006949e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
-2022/03/08 20:41:36 Clark WHATSAT
-2022/03/08 20:41:36 Clark WHATSAT: {client:kiwi.cs.ucla.edu radius:10 bound:1}
-2022/03/08 20:41:36 Clark WHATSAT: AT Juzang 25336030.006949 kiwi.cs.ucla.edu 34.068930 -118.445127 1621464827.959498
-{
-	"html_attributions": [],
-	"next_page_token": "Aap_uEB5tiP0yIm9pLnF2s3oPudx9Tsyez1ObLw2lNuxB1_P5rt9QEHwtWSiKotr3gKiwEfSDawBRqlTtVhmkAKmspysBfjdXcEhPJrra6k-q0U2YsGX5Oye1USXZ5QkfSMMTYmgJiktRzwApGhxYI0BeKhHnXGWvmdUQIrvSdQep_pHjtPVXmyLFAqI5VDI8MD0U7ZkHijXCWJQYrPL8a-zOCQbsvy5BNPgMXK2IviKBdw-9LuasrIcrmGev7a7OZzMzsJWhnqF-ckQIn-q1juLIj5Fj0qMGEHpA4ubLNgDzTRtDywxGMZV1jWAbLD7H84gmDRWfEy2ld8KRXwL7mZrBSdEFLLVyYHm2C4vXfPFlKeXod036F8TXOHULROj5KHZnYGE1Dq0Pa6ik0EcnllsorCKeQ9Dqjbnol8gxdnJd27V",
-	"results": [
-		{
-			"geometry": {
-				"location": {
-					"lat": 34.0522342,
-					"lng": -118.2436849
-				},
-				"viewport": {
-					"northeast": {
-						"lat": 34.33730608759191,
-						"lng": -118.155289077463
-					},
-					"southwest": {
-						"lat": 33.70365193147634,
-						"lng": -118.6681759484859
-					}
-				}
-			},
-			"icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
-			"icon_background_color": "#7B9EB0",
-			"icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
-			"name": "Los Angeles",
-			"photos": [
-				{
-					"height": 746,
-					"html_attributions": [
-						"\u003ca href=\"https://maps.google.com/maps/contrib/108862076113400282635\"\u003eAROUND THE WORLD\u003c/a\u003e"
-					],
-					"photo_reference": "Aap_uEDdx5UtIIYlzUyUeYiEVyAMN3ZpPmJDdxfF_9jQd_SZbIwhHx5MCq4BspffLQ4xr-cWoRUNSgnmkQ5clhViBXDUtXbSwIchMFKhH0NYXe_EBIsofASznR-Qa8-5AvuNYqq--LtSqKB4_IwjEFruj0utJX70S7ujOcCXnEnzZG8Ef92o",
-					"width": 1079
-				}
-			],
-			"place_id": "ChIJE9on3F3HwoAR9AhGJW_fL-I",
-			"reference": "ChIJE9on3F3HwoAR9AhGJW_fL-I",
-			"scope": "GOOGLE",
-			"types": [
-				"locality",
-				"political"
-			],
-			"vicinity": "Los Angeles"
-		}
-	],
-	"status": "OK"
-}
+2022/03/10 00:55:41 server Clark listening on port 10375
+2022/03/10 00:56:33 server Clark listening on port 10375
+2022/03/10 00:57:38 Clark AT
+2022/03/10 00:57:38 Clark AT: {serverID:Juzang timeDelta:2.5437830066323e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:57:38 Clark AT
+2022/03/10 00:57:38 Clark AT: {serverID:Juzang timeDelta:2.5437830066323e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:57:38 Clark AT
+2022/03/10 00:57:38 Clark AT: {serverID:Juzang timeDelta:2.5437830066323e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:58:27 server Clark listening on port 10375
+2022/03/10 00:58:37 Clark AT
+2022/03/10 00:58:37 Clark AT: {serverID:Juzang timeDelta:2.5437889982602e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:58:37 Clark AT
+2022/03/10 00:58:37 Clark AT: {serverID:Juzang timeDelta:2.5437889982602e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:58:37 Clark AT
+2022/03/10 00:58:37 Clark AT: {serverID:Juzang timeDelta:2.5437889982602e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 00:59:25 server Clark listening on port 10375
+2022/03/10 01:01:03 server Clark listening on port 10375
+2022/03/10 01:01:13 server Clark listening on port 10375
+2022/03/10 01:02:33 server Clark listening on port 10375
+2022/03/10 01:02:53 server Clark listening on port 10375
+2022/03/10 01:03:06 server Clark listening on port 10375
+2022/03/10 01:03:43 server Clark listening on port 10375
+2022/03/10 01:03:53 server Clark listening on port 10375
+2022/03/10 01:04:06 server Clark listening on port 10375
+2022/03/10 01:04:11 server Clark listening on port 10375
+2022/03/10 01:04:11 listen tcp :10375: bind: address already in use
+2022/03/10 01:04:26 server Clark listening on port 10375
+2022/03/10 01:04:31 server Clark listening on port 10375
+2022/03/10 01:05:31 server Clark listening on port 10375
+2022/03/10 01:05:51 Clark AT
+2022/03/10 01:05:51 Clark AT: {serverID:Juzang timeDelta:2.5438323201509e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 01:05:51 Clark AT
+2022/03/10 01:05:51 Clark AT: {serverID:Juzang timeDelta:2.5438323201509e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}
+2022/03/10 01:05:51 Clark AT
+2022/03/10 01:05:51 Clark AT: {serverID:Juzang timeDelta:2.5438323201509e+07 client:kiwi.cs.ucla.edu latitude:34.06893 longitude:-118.445127 timestamp:1.621464827959498e+09}

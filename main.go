@@ -17,8 +17,8 @@ import (
 	"github.com/aaron-seo/proxy-herd/mooserver"
 )
 
-// Google Places API... should probably hide this somewhere
-const KEY = "AIzaSyBDD0GRystBZTCKkgVZhgsopsF38JyH5CE"
+// Google API KEY
+var GOOGLE_API_KEY string
 
 // a string to string map of server names and their ports on SEASnet
 var ports = map[string]string{
@@ -41,6 +41,9 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	// get key through environment variables
+	GOOGLE_API_KEY = os.Getenv("GOOGLE_API_KEY")
 
 	// logging
 	err := os.Mkdir("logs", 0755)
@@ -162,7 +165,7 @@ func HandleWHATSAT(w mooserver.ResponseWriter, r *mooserver.Request) {
 		loc.latitude,
 		loc.longitude,
 		whatsat.radius*1000,
-		KEY)
+		GOOGLE_API_KEY)
 
 	resp, err := http.Get(query)
 	if err != nil {
